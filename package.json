@@ -1,12 +1,13 @@
 {
-  "name": "backend",
+  "name": "mesto-backend",
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev src/app.ts",
     "build": "tsc",
-    "lint": "npx eslint src/**/*.ts",
+    "lint": "npx eslint ./src/*",
+    "lint:fix": "npx eslint ./src/* --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Kolesnikov <codeimm@yandex.ru>",
@@ -25,6 +26,8 @@
     "typescript": "^5.7.2"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "express-validator": "^7.2.1",
+    "mongoose": "^8.9.4"
   }
 }
