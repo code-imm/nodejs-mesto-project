@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { HttpStatusCodes } from "../types/HttpError";
+import { HttpStatusCodes } from "../types/HttpStatusCodes";
 
 export const handleValidationErrors =
   (customMessage?: string) =>

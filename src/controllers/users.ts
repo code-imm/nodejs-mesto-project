@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { Types } from "mongoose";
 import User from "../models/user";
-import { AuthenticatedRequest } from "../shared/types/AuthenticatedRequest";
-import { BadRequestError, NotFoundError } from "../shared/types/HttpError";
+import { AuthenticatedRequest } from "shared/types/AuthenticatedRequest";
+import { BadRequestError } from "shared/types/BadRequestError";
+import { NotFoundError } from "shared/types/NotFoundError";
 
 const errorMessages = {
   notFoundUser: "Пользователь с указанным _id не найден.",

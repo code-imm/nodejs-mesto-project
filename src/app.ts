@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import cardRoutes from "./routes/cards";
 import userRoutes from "./routes/users";
 import { AuthenticatedRequest } from "./shared/types/AuthenticatedRequest";
-import { HttpStatusCodes } from "./shared/types/HttpError";
+import { HttpStatusCodes } from "./shared/types/HttpStatusCodes";
 
 const errorMessages = {
   invalidJson: "Некорректный JSON",
