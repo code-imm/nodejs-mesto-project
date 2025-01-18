@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import User from '../models/user';
 import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
-import NotFoundError from '../shared/types/NotFoundError';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',
@@ -45,10 +44,12 @@ export const getUserById = (
   User.findById({ _id: id })
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(errorMessages.notFoundUser);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.notFoundUser });
+      } else {
+        res.send(user);
       }
-
-      res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -75,10 +76,12 @@ export const updateUserProfile = (
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(errorMessages.notFoundUser);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.notFoundUser });
+      } else {
+        res.send(user);
       }
-
-      res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
@@ -105,10 +108,12 @@ export const updateUserAvatar = (
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError(errorMessages.notFoundUser);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.notFoundUser });
+      } else {
+        res.send(user);
       }
-
-      res.send(user);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {

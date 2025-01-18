@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import Card from '../models/card';
 import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
-import NotFoundError from '../shared/types/NotFoundError';
 
 const errorMessages = {
   cardNotFound: 'Карточка с указанным _id не найдена.',
@@ -52,10 +51,12 @@ export const deleteCardById = (
   Card.deleteOne({ _id: id })
     .then((result) => {
       if (result.deletedCount === 0) {
-        throw new NotFoundError(errorMessages.cardDeleteError);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.cardDeleteError });
+      } else {
+        res.send();
       }
-
-      res.send();
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -82,10 +83,12 @@ export const likeCard = (
   )
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(errorMessages.cardNotFound);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.cardNotFound });
+      } else {
+        res.send(card);
       }
-
-      res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
@@ -108,10 +111,12 @@ export const dislikeCard = (
   Card.findByIdAndUpdate(id, { $pull: { likes: req.user?._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        throw new NotFoundError(errorMessages.cardNotFound);
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.cardNotFound });
+      } else {
+        res.send(card);
       }
-
-      res.send(card);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
