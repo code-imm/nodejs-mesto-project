@@ -1,6 +1,6 @@
-import { HttpStatusCodes } from './HttpStatusCodes';
+import HttpStatusCodes from './HttpStatusCodes';
 
-export class NotFoundError extends Error {
+class NotFoundError extends Error {
   statusCode: number;
 
   constructor(message: string) {
@@ -8,3 +8,5 @@ export class NotFoundError extends Error {
     this.statusCode = HttpStatusCodes.NOT_FOUND;
   }
 }
+
+export default NotFoundError;

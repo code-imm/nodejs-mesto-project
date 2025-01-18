@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
-import { HttpStatusCodes } from '../shared/types/HttpStatusCodes';
-import { NotFoundError } from '../shared/types/NotFoundError';
+import HttpStatusCodes from '../shared/types/HttpStatusCodes';
+import NotFoundError from '../shared/types/NotFoundError';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',

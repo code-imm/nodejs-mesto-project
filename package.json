@@ -6,8 +6,8 @@
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev src/app.ts",
     "build": "tsc",
-    "lint": "npx eslint .",
-    "lint:fix": "npx eslint . --fix",
+    "lint": "npx eslint . --ext .js,.ts",
+    "lint:fix": "npx eslint . --ext .js,.ts --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Kolesnikov <codeimm@yandex.ru>",

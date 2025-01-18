@@ -1,9 +1,9 @@
 import { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
-import { HttpStatusCodes } from '../shared/types/HttpStatusCodes';
 import Card from '../models/card';
 import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
-import { NotFoundError } from '../shared/types/NotFoundError';
+import HttpStatusCodes from '../shared/types/HttpStatusCodes';
+import NotFoundError from '../shared/types/NotFoundError';
 
 const errorMessages = {
   cardNotFound: 'Карточка с указанным _id не найдена.',
