@@ -1,4 +1,4 @@
-import { HttpStatusCodes } from "./HttpStatusCodes";
+import { HttpStatusCodes } from './HttpStatusCodes';
 
 export class NotFoundError extends Error {
   statusCode: number;

@@ -1,19 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-import mongoose, { Types } from 'mongoose';
-import { HttpStatusCodes } from '../shared/types/HttpStatusCodes';
-import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
-import { BadRequestError } from '../shared/types/BadRequestError';
-import { NotFoundError } from '../shared/types/NotFoundError';
+import mongoose from 'mongoose';
 import User from '../models/user';
+import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
+import { HttpStatusCodes } from '../shared/types/HttpStatusCodes';
+import { NotFoundError } from '../shared/types/NotFoundError';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',
   updateUserProfile: 'Переданы некорректные данные при обновлении профиля.',
   updateUserAvatar: 'Переданы некорректные данные при обновлении аватара.',
   notFoundUser: 'Пользователь с указанным _id не найден.',
-  userUpdate: 'Ошибка при обновлении профиля пользователя.',
   invalidUserIdError: 'Передан несуществующий _id пользователя.',
-  userAvatarUpdate: 'Ошибка при обновлении аватара пользователя.',
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
@@ -43,10 +40,6 @@ export const getUserById = (
 ) => {
   const { id } = req.params;
 
-  if (!Types.ObjectId.isValid(id)) {
-    throw new BadRequestError(errorMessages.invalidUserIdError);
-  }
-
   User.findById({ _id: id })
     .then((user) => {
       if (!user) {
@@ -69,7 +62,9 @@ export const updateUserProfile = (
   res: Response,
   next: NextFunction,
 ) => {
-  User.findByIdAndUpdate(req.user?._id, { ...req.body }, { new: true, runValidators: true })
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(req.user?._id, { name, about }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundError(errorMessages.notFoundUser);
