@@ -6,8 +6,8 @@
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev src/app.ts",
     "build": "tsc",
-    "lint": "npx eslint ./src/*",
-    "lint:fix": "npx eslint ./src/* --fix",
+    "lint": "npx eslint src/**/*.ts",
+    "lint:fix": "npx eslint src/**/*.ts --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Daniil Kolesnikov <codeimm@yandex.ru>",
@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "express": "^4.21.2",
-    "express-validator": "^7.2.1",
     "mongoose": "^8.9.4"
   }
 }
