@@ -8,6 +8,7 @@ import { HttpStatusCodes } from './shared/types/HttpStatusCodes';
 const errorMessages = {
   invalidJson: 'Некорректный JSON',
   internalServerError: 'На сервере произошла ошибка',
+  notFoundError: 'Страница не найдена',
 };
 
 const { PORT = 3000 } = process.env;
@@ -42,6 +43,10 @@ app.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
+
+app.use((req, res) => {
+  res.status(404).send({ message: errorMessages.notFoundError });
+});
 
 app.use((err: any, req: Request, res: Response) => {
   const { statusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR, message } = err;
