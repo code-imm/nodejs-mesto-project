@@ -1,8 +1,9 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
+import type{ NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
-import { AuthenticatedRequest } from './shared/types/AuthenticatedRequest';
+import type { AuthenticatedRequest } from './shared/types/AuthenticatedRequest';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
 
 const errorMessages = {

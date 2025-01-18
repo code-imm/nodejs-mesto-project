@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
+import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 import NotFoundError from '../shared/types/NotFoundError';
 
