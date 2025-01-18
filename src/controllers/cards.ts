@@ -27,7 +27,7 @@ export const getCards = (
   next: NextFunction
 ) => {
   Card.find({ owner: req.user?._id })
-    .then((cards) => res.status(HttpStatusCodes.OK).send(cards))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -44,7 +44,7 @@ export const deleteCardById = (
         throw new NotFoundError(errorMessages.cardDeleteError);
       }
 
-      res.status(HttpStatusCodes.OK).send();
+      res.send();
     })
     .catch(next);
 };
@@ -66,7 +66,7 @@ export const likeCard = (
         throw new NotFoundError(errorMessages.cardNotFound);
       }
 
-      res.status(HttpStatusCodes.OK).send(card);
+      res.send(card);
     })
     .catch(next);
 };
@@ -84,7 +84,7 @@ export const dislikeCard = (
         throw new NotFoundError(errorMessages.cardNotFound);
       }
 
-      res.status(HttpStatusCodes.OK).send(card);
+      res.send(card);
     })
     .catch(next);
 };

@@ -1,19 +1,19 @@
-import express, { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
-import cardRoutes from "./routes/cards";
-import userRoutes from "./routes/users";
-import { AuthenticatedRequest } from "./shared/types/AuthenticatedRequest";
-import { HttpStatusCodes } from "./shared/types/HttpStatusCodes";
+import express, { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import cardRoutes from './routes/cards';
+import userRoutes from './routes/users';
+import { AuthenticatedRequest } from './shared/types/AuthenticatedRequest';
+import { HttpStatusCodes } from './shared/types/HttpStatusCodes';
 
 const errorMessages = {
-  invalidJson: "Некорректный JSON",
-  internalServerError: "На сервере произошла ошибка",
+  invalidJson: 'Некорректный JSON',
+  internalServerError: 'На сервере произошла ошибка',
 };
 
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/mestodb");
+  await mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 }
 
 main().catch((err) => console.log(err));
@@ -34,14 +34,14 @@ app.use((err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
 
 app.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   req.user = {
-    _id: "678222b5991c63ba3e033a92",
+    _id: '678222b5991c63ba3e033a92',
   };
 
   next();
 });
 
-app.use("/users", userRoutes);
-app.use("/cards", cardRoutes);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 app.use((err: any, req: Request, res: Response) => {
   const { statusCode = HttpStatusCodes.INTERNAL_SERVER_ERROR, message } = err;
