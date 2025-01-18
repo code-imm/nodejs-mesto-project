@@ -23,7 +23,9 @@ export const createCard = (
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.createCard });
+        res
+          .status(HttpStatusCodes.CREATED)
+          .send({ message: errorMessages.createCard });
       } else {
         next(err);
       }
@@ -57,7 +59,9 @@ export const deleteCardById = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.invalidCardIdError });
       } else {
         next(err);
       }
@@ -85,7 +89,9 @@ export const likeCard = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.invalidCardIdError });
       } else {
         next(err);
       }
@@ -109,7 +115,9 @@ export const dislikeCard = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.invalidCardIdError });
       } else {
         next(err);
       }

@@ -1,5 +1,5 @@
 import express from 'express';
-import type{ NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
@@ -48,7 +48,9 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
 app.use((req, res) => {
-  res.status(HttpStatusCodes.NOT_FOUND).send({ message: errorMessages.notFoundError });
+  res
+    .status(HttpStatusCodes.NOT_FOUND)
+    .send({ message: errorMessages.notFoundError });
 });
 
 app.use((err: any, req: Request, res: Response) => {

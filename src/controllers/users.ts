@@ -20,7 +20,9 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.createUser });
+        res
+          .status(HttpStatusCodes.CREATED)
+          .send({ message: errorMessages.createUser });
       } else {
         next(err);
       }
@@ -50,7 +52,9 @@ export const getUserById = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidUserIdError });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.invalidUserIdError });
       } else {
         next(err);
       }
@@ -64,7 +68,11 @@ export const updateUserProfile = (
 ) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user?._id, { name, about }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    req.user?._id,
+    { name, about },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (!user) {
         throw new NotFoundError(errorMessages.notFoundUser);
@@ -74,7 +82,9 @@ export const updateUserProfile = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.updateUserProfile });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.updateUserProfile });
       } else {
         next(err);
       }
@@ -88,7 +98,11 @@ export const updateUserAvatar = (
 ) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user?._id, { avatar }, { new: true, runValidators: true })
+  User.findByIdAndUpdate(
+    req.user?._id,
+    { avatar },
+    { new: true, runValidators: true },
+  )
     .then((user) => {
       if (!user) {
         throw new NotFoundError(errorMessages.notFoundUser);
@@ -98,7 +112,9 @@ export const updateUserAvatar = (
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.updateUserAvatar });
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.updateUserAvatar });
       } else {
         next(err);
       }
