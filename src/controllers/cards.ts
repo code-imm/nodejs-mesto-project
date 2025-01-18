@@ -1,4 +1,6 @@
 import { NextFunction, Response } from 'express';
+import mongoose from 'mongoose';
+import { HttpStatusCodes } from '../shared/types/HttpStatusCodes';
 import Card from '../models/card';
 import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import { NotFoundError } from '../shared/types/NotFoundError';
@@ -6,6 +8,8 @@ import { NotFoundError } from '../shared/types/NotFoundError';
 const errorMessages = {
   cardNotFound: 'Карточка с указанным _id не найдена.',
   cardDeleteError: 'Ошибка при удалении карточки.',
+  invalidCardIdError: 'Передан несуществующий _id карточки.',
+  createCard: 'Переданы некорректные данные при создании карточки.',
 };
 
 export const createCard = (
@@ -17,7 +21,13 @@ export const createCard = (
 
   Card.create({ name, link, owner: req.user?._id })
     .then((card) => res.send({ data: card }))
-    .catch(next);
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.createCard });
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const getCards = (
@@ -45,7 +55,13 @@ export const deleteCardById = (
 
       res.send();
     })
-    .catch(next);
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const likeCard = (
@@ -67,7 +83,13 @@ export const likeCard = (
 
       res.send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+      } else {
+        next(err);
+      }
+    });
 };
 
 export const dislikeCard = (
@@ -85,5 +107,11 @@ export const dislikeCard = (
 
       res.send(card);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res.status(HttpStatusCodes.BAD_REQUEST).send({ message: errorMessages.invalidCardIdError });
+      } else {
+        next(err);
+      }
+    });
 };
