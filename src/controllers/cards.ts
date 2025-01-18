@@ -1,18 +1,17 @@
-import { NextFunction, Response } from "express";
-import { AuthenticatedRequest } from "shared/types/AuthenticatedRequest";
-import { HttpStatusCodes } from "shared/types/HttpStatusCodes";
-import { NotFoundError } from "shared/types/NotFoundError";
-import Card from "../models/card";
+import { NextFunction, Response } from 'express';
+import Card from '../models/card';
+import { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
+import { NotFoundError } from '../shared/types/NotFoundError';
 
 const errorMessages = {
-  cardNotFound: "Карточка с указанным _id не найдена.",
-  cardDeleteError: "Ошибка при удалении карточки.",
+  cardNotFound: 'Карточка с указанным _id не найдена.',
+  cardDeleteError: 'Ошибка при удалении карточки.',
 };
 
 export const createCard = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { name, link } = req.body;
 
@@ -24,9 +23,9 @@ export const createCard = (
 export const getCards = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
-  Card.find({ owner: req.user?._id })
+  Card.find({})
     .then((cards) => res.send(cards))
     .catch(next);
 };
@@ -34,7 +33,7 @@ export const getCards = (
 export const deleteCardById = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { id } = req.params;
 
@@ -52,14 +51,14 @@ export const deleteCardById = (
 export const likeCard = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { id } = req.params;
 
   Card.findByIdAndUpdate(
     id,
     { $addToSet: { likes: req.user?._id } },
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
@@ -74,7 +73,7 @@ export const likeCard = (
 export const dislikeCard = (
   req: AuthenticatedRequest,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { id } = req.params;
 
