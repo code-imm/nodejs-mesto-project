@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user';
@@ -17,19 +18,20 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  User.create({
-    name, about, avatar, email, password,
-  })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.CREATED)
-          .send({ message: errorMessages.createUser });
-      } else {
-        next(err);
-      }
-    });
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    })
+      .then((user) => res.send(user))
+      .catch((err) => {
+        if (err instanceof mongoose.Error.ValidationError) {
+          res
+            .status(HttpStatusCodes.CREATED)
+            .send({ message: errorMessages.createUser });
+        } else {
+          next(err);
+        }
+      }));
 };
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => {
