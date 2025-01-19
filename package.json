@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.2",
+    "@types/validator": "^13.12.2",
     "@typescript-eslint/eslint-plugin": "^8.18.2",
     "@typescript-eslint/parser": "^8.18.2",
     "eslint": "^8.57.1",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "express": "^4.21.2",
-    "mongoose": "^8.9.4"
+    "mongoose": "^8.9.4",
+    "validator": "^13.12.0"
   }
 }

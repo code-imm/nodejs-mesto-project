@@ -1,12 +1,28 @@
 import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
 
 export interface IUser {
+  email: string;
+  password: string;
   name: string;
   about: string;
   avatar: string;
 }
 
 const userSchema = new Schema<IUser>({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: {
+      validator(v) {
+        return validator.isEmail(v);
+      },
+    },
+  },
+  password: {
+    type: String,
+  },
   name: {
     type: String,
     required: true,
