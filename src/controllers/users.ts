@@ -19,20 +19,23 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  bcrypt.hash(password, 10)
-    .then((hash) => User.create({
-      name, about, avatar, email, password: hash,
-    })
-      .then((user) => res.send(user))
-      .catch((err) => {
-        if (err instanceof mongoose.Error.ValidationError) {
-          res
-            .status(HttpStatusCodes.CREATED)
-            .send({ message: errorMessages.createUser });
-        } else {
-          next(err);
-        }
-      }));
+  bcrypt.hash(password, 10).then((hash) => User.create({
+    name,
+    about,
+    avatar,
+    email,
+    password: hash,
+  })
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        res
+          .status(HttpStatusCodes.CREATED)
+          .send({ message: errorMessages.createUser });
+      } else {
+        next(err);
+      }
+    }));
 };
 
 export const login = (req: Request, res: Response) => {
@@ -40,18 +43,14 @@ export const login = (req: Request, res: Response) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign(
-        { _id: user._id },
-        'secret-key',
-        { expiresIn: '7d' },
-      );
+      const token = jwt.sign({ _id: user._id }, 'secret-key', {
+        expiresIn: '7d',
+      });
 
       res.send({ token });
     })
     .catch((err) => {
-      res
-        .status(HttpStatusCodes.UNAUTHORIZED)
-        .send({ message: err.message });
+      res.status(HttpStatusCodes.UNAUTHORIZED).send({ message: err.message });
     });
 };
 

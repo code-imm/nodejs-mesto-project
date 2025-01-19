@@ -13,7 +13,10 @@ export interface IUser {
 export interface IUserDocument extends IUser, Document {}
 
 export interface IUserModel extends Model<IUserDocument> {
-  findUserByCredentials(email: string, password: string): Promise<IUserDocument>;
+  findUserByCredentials(
+    email: string,
+    password: string,
+  ): Promise<IUserDocument>;
 }
 
 const userSchema = new Schema<IUserDocument, IUserModel>({
@@ -45,22 +48,26 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
   },
   avatar: {
     type: String,
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    default:
+      'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
 });
 
-userSchema.static('findUserByCredentials', async function findUserByCredentials(email: string, password: string) {
-  const user = await this.findOne({ email });
-  if (!user) {
-    throw new Error('Неправильные почта или пароль');
-  }
+userSchema.static(
+  'findUserByCredentials',
+  async function findUserByCredentials(email: string, password: string) {
+    const user = await this.findOne({ email });
+    if (!user) {
+      throw new Error('Неправильные почта или пароль');
+    }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error('Неправильные почта или пароль');
-  }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      throw new Error('Неправильные почта или пароль');
+    }
 
-  return user;
-});
+    return user;
+  },
+);
 
 export default mongoose.model<IUserDocument, IUserModel>('User', userSchema);
