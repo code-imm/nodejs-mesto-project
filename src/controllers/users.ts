@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import User from '../models/user';
 import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
@@ -32,6 +33,26 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
           next(err);
         }
       }));
+};
+
+export const login = (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        'secret-key',
+        { expiresIn: '7d' },
+      );
+
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(HttpStatusCodes.UNAUTHORIZED)
+        .send({ message: err.message });
+    });
 };
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => {

@@ -1,4 +1,5 @@
-import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 import validator from 'validator';
 
 export interface IUser {
@@ -9,7 +10,13 @@ export interface IUser {
   avatar: string;
 }
 
-const userSchema = new Schema<IUser>({
+export interface IUserDocument extends IUser, Document {}
+
+export interface IUserModel extends Model<IUserDocument> {
+  findUserByCredentials(email: string, password: string): Promise<IUserDocument>;
+}
+
+const userSchema = new Schema<IUserDocument, IUserModel>({
   email: {
     type: String,
     required: true,
@@ -22,6 +29,7 @@ const userSchema = new Schema<IUser>({
   },
   password: {
     type: String,
+    required: true,
   },
   name: {
     type: String,
@@ -41,4 +49,18 @@ const userSchema = new Schema<IUser>({
   },
 });
 
-export default mongoose.model('user', userSchema);
+userSchema.static('findUserByCredentials', async function findUserByCredentials(email: string, password: string) {
+  const user = await this.findOne({ email });
+  if (!user) {
+    throw new Error('Неправильные почта или пароль');
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Неправильные почта или пароль');
+  }
+
+  return user;
+});
+
+export default mongoose.model<IUserDocument, IUserModel>('User', userSchema);
