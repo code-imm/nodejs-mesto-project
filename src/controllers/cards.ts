@@ -5,6 +5,7 @@ import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 
 const errorMessages = {
   cardNotFound: 'Карточка с указанным _id не найдена.',
+  forbiddenCardDelete: 'Недостаточно прав для удаления этой карточки',
   cardDeleteError: 'Ошибка при удалении карточки.',
   invalidCardIdError: 'Передан несуществующий _id карточки.',
   createCard: 'Переданы некорректные данные при создании карточки.',
@@ -39,15 +40,23 @@ export const deleteCardById = (
 ) => {
   const { id } = req.params;
 
-  Card.deleteOne({ _id: id })
-    .then((result) => {
-      if (result.deletedCount === 0) {
-        res
+  Card.findById(id)
+    .then((card) => {
+      if (!card) {
+        return res
           .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.cardDeleteError });
-      } else {
-        res.send();
+          .send({ message: errorMessages.cardNotFound });
       }
+
+      if (String(card.owner) !== String(req.user?._id)) {
+        return res
+          .status(HttpStatusCodes.FORBIDDEN)
+          .send({ message: errorMessages.forbiddenCardDelete });
+      }
+
+      return Card.deleteOne({ _id: id })
+        .then(() => res.send())
+        .catch(next);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {

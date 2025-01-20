@@ -24,6 +24,7 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
     type: String,
     required: true,
     unique: true,
+    index: true,
     validate: {
       validator(v) {
         return validator.isEmail(v);

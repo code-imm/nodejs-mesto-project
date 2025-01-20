@@ -1,6 +1,10 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 
+interface JwtPayloadWithId extends jwt.JwtPayload {
+  _id: string;
+}
+
 const errorMessages = {
   authorizationRequired: 'Необходима авторизация',
 };
@@ -17,12 +21,12 @@ export default (req: Request, res: Response, next: NextFunction) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'secret-key');
+    payload = jwt.verify(token, 'secret-key') as JwtPayloadWithId;
   } catch {
     res.status(401).send({ message: errorMessages.authorizationRequired });
   }
 
-  req.user = payload!;
+  req.user = payload;
 
   next();
 };

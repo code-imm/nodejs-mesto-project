@@ -7,6 +7,7 @@ import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',
+  duplicateEmail: 'Пользователь с таким email уже существует.',
 };
 
 export const createUser = (req: Request, res: Response, next: NextFunction) => {
@@ -27,6 +28,10 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
         res
           .status(HttpStatusCodes.CREATED)
           .send({ message: errorMessages.createUser });
+      } else if (err.code === 11000) {
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.duplicateEmail });
       } else {
         next(err);
       }
