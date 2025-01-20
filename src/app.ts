@@ -6,6 +6,7 @@ import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
 import { createUser, login } from './controllers/auth';
+import { requestLogger, errorLogger } from './middlewares/logger';
 
 const errorMessages = {
   invalidJson: 'Некорректный JSON',
@@ -40,6 +41,8 @@ app.use((err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
+app.use(requestLogger);
+
 app.post('/signup', createUser);
 app.post('/signin', login);
 
@@ -53,6 +56,8 @@ app.use((req, res) => {
     .status(HttpStatusCodes.NOT_FOUND)
     .send({ message: errorMessages.notFoundError });
 });
+
+app.use(errorLogger);
 
 app.use((err: any, req: Request, res: Response) => {
   const statusCode = err.statusCode || HttpStatusCodes.INTERNAL_SERVER_ERROR;
