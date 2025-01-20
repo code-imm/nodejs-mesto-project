@@ -22,7 +22,11 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     email,
     password: hash,
   })
-    .then((user) => res.send(user))
+    .then((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password: _password, ...userWithoutPassword } = user.toObject();
+      res.send(userWithoutPassword);
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         res
