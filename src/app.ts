@@ -1,10 +1,11 @@
-import express from 'express';
 import type { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
+import auth from './middlewares/auth';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
-import type { AuthenticatedRequest } from './shared/types/AuthenticatedRequest';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
+import { createUser, login } from './controllers/auth';
 
 const errorMessages = {
   invalidJson: 'Некорректный JSON',
@@ -39,10 +40,10 @@ app.use((err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  req.user = { _id: '678222b5991c63ba3e033a92' };
-  next();
-});
+app.post('/signup', createUser);
+app.post('/signin', login);
+
+app.use(auth);
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);

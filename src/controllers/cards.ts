@@ -1,7 +1,6 @@
-import type { NextFunction, Response } from 'express';
+import type { NextFunction, Response, Request } from 'express';
 import mongoose from 'mongoose';
 import Card from '../models/card';
-import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 
 const errorMessages = {
@@ -11,11 +10,7 @@ const errorMessages = {
   createCard: 'Переданы некорректные данные при создании карточки.',
 };
 
-export const createCard = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createCard = (req: Request, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user?._id })
@@ -31,18 +26,14 @@ export const createCard = (
     });
 };
 
-export const getCards = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({})
     .then((cards) => res.send(cards))
     .catch(next);
 };
 
 export const deleteCardById = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -69,11 +60,7 @@ export const deleteCardById = (
     });
 };
 
-export const likeCard = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   Card.findByIdAndUpdate(
@@ -102,7 +89,7 @@ export const likeCard = (
 };
 
 export const dislikeCard = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {

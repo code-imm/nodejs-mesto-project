@@ -1,57 +1,13 @@
-import bcrypt from 'bcryptjs';
 import type { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 
 const errorMessages = {
-  createUser: 'Переданы некорректные данные при создании пользователя.',
   updateUserProfile: 'Переданы некорректные данные при обновлении профиля.',
   updateUserAvatar: 'Переданы некорректные данные при обновлении аватара.',
   notFoundUser: 'Пользователь с указанным _id не найден.',
   invalidUserIdError: 'Передан несуществующий _id пользователя.',
-};
-
-export const createUser = (req: Request, res: Response, next: NextFunction) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
-
-  bcrypt.hash(password, 10).then((hash) => User.create({
-    name,
-    about,
-    avatar,
-    email,
-    password: hash,
-  })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.CREATED)
-          .send({ message: errorMessages.createUser });
-      } else {
-        next(err);
-      }
-    }));
-};
-
-export const login = (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  return User.findUserByCredentials(email, password)
-    .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'secret-key', {
-        expiresIn: '7d',
-      });
-
-      res.send({ token });
-    })
-    .catch((err) => {
-      res.status(HttpStatusCodes.UNAUTHORIZED).send({ message: err.message });
-    });
 };
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => {
@@ -89,7 +45,7 @@ export const getUserById = (
 };
 
 export const updateUserProfile = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -121,7 +77,7 @@ export const updateUserProfile = (
 };
 
 export const updateUserAvatar = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
