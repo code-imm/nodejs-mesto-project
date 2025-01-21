@@ -1,31 +1,14 @@
 import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
-import HttpStatusCodes from '../shared/types/HttpStatusCodes';
+import BadRequestError from '../shared/errors/BadRequestError';
+import NotFoundError from '../shared/errors/NotFoundError';
 
 const errorMessages = {
-  createUser: 'Переданы некорректные данные при создании пользователя.',
   updateUserProfile: 'Переданы некорректные данные при обновлении профиля.',
   updateUserAvatar: 'Переданы некорректные данные при обновлении аватара.',
   notFoundUser: 'Пользователь с указанным _id не найден.',
   invalidUserIdError: 'Передан несуществующий _id пользователя.',
-};
-
-export const createUser = (req: Request, res: Response, next: NextFunction) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.CREATED)
-          .send({ message: errorMessages.createUser });
-      } else {
-        next(err);
-      }
-    });
 };
 
 export const getUsers = (req: Request, res: Response, next: NextFunction) => {
@@ -44,18 +27,32 @@ export const getUserById = (
   User.findById({ _id: id })
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidUserIdError });
+        next(new BadRequestError(errorMessages.invalidUserIdError));
+      } else {
+        next(err);
+      }
+    });
+};
+
+export const getUser = (req: Request, res: Response, next: NextFunction) => {
+  User.findById({ _id: req.user?._id })
+    .then((user) => {
+      if (!user) {
+        next(new NotFoundError(errorMessages.notFoundUser));
+      } else {
+        res.send(user);
+      }
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        next(new BadRequestError(errorMessages.invalidUserIdError));
       } else {
         next(err);
       }
@@ -63,7 +60,7 @@ export const getUserById = (
 };
 
 export const updateUserProfile = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -76,18 +73,14 @@ export const updateUserProfile = (
   )
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.updateUserProfile });
+        next(new BadRequestError(errorMessages.updateUserProfile));
       } else {
         next(err);
       }
@@ -95,7 +88,7 @@ export const updateUserProfile = (
 };
 
 export const updateUserAvatar = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -108,18 +101,14 @@ export const updateUserAvatar = (
   )
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.updateUserAvatar });
+        next(new BadRequestError(errorMessages.updateUserAvatar));
       } else {
         next(err);
       }

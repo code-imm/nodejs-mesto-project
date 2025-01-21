@@ -1,13 +1,17 @@
-import express from 'express';
 import type { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
+import { CelebrateError } from 'celebrate';
+import auth from './middlewares/auth';
+import { errorLogger, requestLogger } from './middlewares/logger';
+import authRoutes from './routes/auth';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
-import type { AuthenticatedRequest } from './shared/types/AuthenticatedRequest';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
 
 const errorMessages = {
   invalidJson: 'Некорректный JSON',
+  invalidRequest: 'Некорректный запрос',
   internalServerError: 'На сервере произошла ошибка',
   notFoundError: 'Страница не найдена',
 };
@@ -39,10 +43,11 @@ app.use((err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.use((req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  req.user = { _id: '678222b5991c63ba3e033a92' };
-  next();
-});
+app.use(requestLogger);
+
+app.use('/', authRoutes);
+
+app.use(auth);
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
@@ -53,11 +58,21 @@ app.use((req, res) => {
     .send({ message: errorMessages.notFoundError });
 });
 
-app.use((err: any, req: Request, res: Response) => {
+app.use(errorLogger);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode || HttpStatusCodes.INTERNAL_SERVER_ERROR;
   const message = statusCode === HttpStatusCodes.INTERNAL_SERVER_ERROR
     ? errorMessages.internalServerError
     : err.message;
+
+  if (err instanceof CelebrateError) {
+    res.status(HttpStatusCodes.BAD_REQUEST).send({
+      message: errorMessages.invalidRequest,
+    });
+    return;
+  }
 
   res.status(statusCode).send({ message });
 });

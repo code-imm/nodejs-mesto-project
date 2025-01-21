@@ -1,79 +1,68 @@
-import type { NextFunction, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import Card from '../models/card';
-import type { AuthenticatedRequest } from '../shared/types/AuthenticatedRequest';
+import BadRequestError from '../shared/errors/BadRequestError';
+import ForbiddenError from '../shared/errors/ForbiddenError';
+import NotFoundError from '../shared/errors/NotFoundError';
 import HttpStatusCodes from '../shared/types/HttpStatusCodes';
 
 const errorMessages = {
   cardNotFound: 'Карточка с указанным _id не найдена.',
-  cardDeleteError: 'Ошибка при удалении карточки.',
-  invalidCardIdError: 'Передан несуществующий _id карточки.',
+  forbiddenCardDelete: 'Недостаточно прав для удаления этой карточки',
   createCard: 'Переданы некорректные данные при создании карточки.',
 };
 
-export const createCard = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const createCard = (req: Request, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user?._id })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(HttpStatusCodes.CREATED).send({ data: card }))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.CREATED)
-          .send({ message: errorMessages.createCard });
+        next(new BadRequestError(errorMessages.createCard));
       } else {
         next(err);
       }
     });
 };
 
-export const getCards = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({})
     .then((cards) => res.send(cards))
     .catch(next);
 };
 
 export const deleteCardById = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   const { id } = req.params;
 
-  Card.deleteOne({ _id: id })
-    .then((result) => {
-      if (result.deletedCount === 0) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.cardDeleteError });
-      } else {
-        res.send();
+  Card.findById(id)
+    .then((card) => {
+      if (!card) {
+        return next(new NotFoundError(errorMessages.cardNotFound));
       }
+
+      if (String(card.owner) !== String(req.user?._id)) {
+        return next(new ForbiddenError(errorMessages.forbiddenCardDelete));
+      }
+
+      return Card.deleteOne({ _id: id })
+        .then(() => res.send())
+        .catch(next);
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidCardIdError });
+        next(new BadRequestError(errorMessages.cardNotFound));
       } else {
         next(err);
       }
     });
 };
 
-export const likeCard = (
-  req: AuthenticatedRequest,
-  res: Response,
-  next: NextFunction,
-) => {
+export const likeCard = (req: Request, res: Response, next: NextFunction) => {
   const { id } = req.params;
 
   Card.findByIdAndUpdate(
@@ -83,18 +72,14 @@ export const likeCard = (
   )
     .then((card) => {
       if (!card) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.cardNotFound });
+        next(new NotFoundError(errorMessages.cardNotFound));
       } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidCardIdError });
+        next(new BadRequestError(errorMessages.cardNotFound));
       } else {
         next(err);
       }
@@ -102,7 +87,7 @@ export const likeCard = (
 };
 
 export const dislikeCard = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
@@ -111,18 +96,14 @@ export const dislikeCard = (
   Card.findByIdAndUpdate(id, { $pull: { likes: req.user?._id } }, { new: true })
     .then((card) => {
       if (!card) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.cardNotFound });
+        next(new NotFoundError(errorMessages.cardNotFound));
       } else {
         res.send(card);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidCardIdError });
+        next(new BadRequestError(errorMessages.cardNotFound));
       } else {
         next(err);
       }
