@@ -59,7 +59,8 @@ app.use((req, res) => {
 
 app.use(errorLogger);
 
-app.use((err: any, req: Request, res: Response) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const statusCode = err.statusCode || HttpStatusCodes.INTERNAL_SERVER_ERROR;
   const message = statusCode === HttpStatusCodes.INTERNAL_SERVER_ERROR
     ? errorMessages.internalServerError

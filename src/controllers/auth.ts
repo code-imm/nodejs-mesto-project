@@ -3,7 +3,9 @@ import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import HttpStatusCodes from '../shared/types/HttpStatusCodes';
+import BadRequestError from '../shared/errors/BadRequestError';
+import ConflictError from '../shared/errors/ConflictError';
+import UnauthorizedError from '../shared/errors/UnauthorizedError';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',
@@ -29,20 +31,16 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.CREATED)
-          .send({ message: errorMessages.createUser });
+        next(new BadRequestError(errorMessages.createUser));
       } else if (err.code === 11000) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.duplicateEmail });
+        next(new ConflictError(errorMessages.duplicateEmail));
       } else {
         next(err);
       }
     }));
 };
 
-export const login = (req: Request, res: Response) => {
+export const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -54,6 +52,6 @@ export const login = (req: Request, res: Response) => {
       res.send({ token });
     })
     .catch((err) => {
-      res.status(HttpStatusCodes.UNAUTHORIZED).send({ message: err.message });
+      next(new UnauthorizedError(err.message));
     });
 };

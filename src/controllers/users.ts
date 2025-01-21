@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import HttpStatusCodes from '../shared/types/HttpStatusCodes';
+import BadRequestError from '../shared/errors/BadRequestError';
+import NotFoundError from '../shared/errors/NotFoundError';
 
 const errorMessages = {
   updateUserProfile: 'Переданы некорректные данные при обновлении профиля.',
@@ -26,18 +27,14 @@ export const getUserById = (
   User.findById({ _id: id })
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidUserIdError });
+        next(new BadRequestError(errorMessages.invalidUserIdError));
       } else {
         next(err);
       }
@@ -52,18 +49,14 @@ export const getUser = (
   User.findById({ _id: req.user?._id })
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.invalidUserIdError });
+        next(new BadRequestError(errorMessages.invalidUserIdError));
       } else {
         next(err);
       }
@@ -84,18 +77,14 @@ export const updateUserProfile = (
   )
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.updateUserProfile });
+        next(new BadRequestError(errorMessages.updateUserProfile));
       } else {
         next(err);
       }
@@ -116,18 +105,14 @@ export const updateUserAvatar = (
   )
     .then((user) => {
       if (!user) {
-        res
-          .status(HttpStatusCodes.NOT_FOUND)
-          .send({ message: errorMessages.notFoundUser });
+        next(new NotFoundError(errorMessages.notFoundUser));
       } else {
         res.send(user);
       }
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
-        res
-          .status(HttpStatusCodes.BAD_REQUEST)
-          .send({ message: errorMessages.updateUserAvatar });
+        next(new BadRequestError(errorMessages.updateUserAvatar));
       } else {
         next(err);
       }
