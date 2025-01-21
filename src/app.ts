@@ -1,15 +1,17 @@
 import type { NextFunction, Request, Response } from 'express';
 import express from 'express';
 import mongoose from 'mongoose';
+import { CelebrateError } from 'celebrate';
 import auth from './middlewares/auth';
+import { errorLogger, requestLogger } from './middlewares/logger';
+import authRoutes from './routes/auth';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
-import { createUser, login } from './controllers/auth';
-import { requestLogger, errorLogger } from './middlewares/logger';
 
 const errorMessages = {
   invalidJson: 'Некорректный JSON',
+  invalidRequest: 'Некорректный запрос',
   internalServerError: 'На сервере произошла ошибка',
   notFoundError: 'Страница не найдена',
 };
@@ -43,8 +45,7 @@ app.use((err: SyntaxError, req: Request, res: Response, next: NextFunction) => {
 
 app.use(requestLogger);
 
-app.post('/signup', createUser);
-app.post('/signin', login);
+app.use('/', authRoutes);
 
 app.use(auth);
 
@@ -65,6 +66,13 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   const message = statusCode === HttpStatusCodes.INTERNAL_SERVER_ERROR
     ? errorMessages.internalServerError
     : err.message;
+
+  if (err instanceof CelebrateError) {
+    res.status(HttpStatusCodes.BAD_REQUEST).send({
+      message: errorMessages.invalidRequest,
+    });
+    return;
+  }
 
   res.status(statusCode).send({ message });
 });
