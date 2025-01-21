@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { Document, Model, Schema } from 'mongoose';
 import validator from 'validator';
+import validateURL from '../shared/utils/validateURL';
 
 export interface IUser {
   email: string;
@@ -52,6 +53,11 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
     type: String,
     default:
       'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator(v) {
+        return validateURL(v);
+      },
+    },
   },
 });
 

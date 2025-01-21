@@ -24,6 +24,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
     payload = jwt.verify(token, 'secret-key') as JwtPayloadWithId;
   } catch {
     res.status(401).send({ message: errorMessages.authorizationRequired });
+    return;
   }
 
   req.user = payload;
