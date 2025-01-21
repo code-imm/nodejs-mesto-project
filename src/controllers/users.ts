@@ -41,11 +41,7 @@ export const getUserById = (
     });
 };
 
-export const getUser = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const getUser = (req: Request, res: Response, next: NextFunction) => {
   User.findById({ _id: req.user?._id })
     .then((user) => {
       if (!user) {

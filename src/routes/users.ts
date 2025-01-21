@@ -1,6 +1,4 @@
-import {
-  celebrate, Joi, Segments,
-} from 'celebrate';
+import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import {
   getUser,
@@ -27,14 +25,26 @@ const updateUserAvatarSchema: Joi.Schema = Joi.object({
 
 router.get('/', getUsers);
 router.get('/me', getUser);
-router.get('/:id', celebrate({
-  [Segments.PARAMS]: userParamsSchema,
-}), getUserById);
-router.patch('/me', celebrate({
-  [Segments.BODY]: updateUserProfileSchema,
-}), updateUserProfile);
-router.patch('/me/avatar', celebrate({
-  [Segments.BODY]: updateUserAvatarSchema,
-}), updateUserAvatar);
+router.get(
+  '/:id',
+  celebrate({
+    [Segments.PARAMS]: userParamsSchema,
+  }),
+  getUserById,
+);
+router.patch(
+  '/me',
+  celebrate({
+    [Segments.BODY]: updateUserProfileSchema,
+  }),
+  updateUserProfile,
+);
+router.patch(
+  '/me/avatar',
+  celebrate({
+    [Segments.BODY]: updateUserAvatarSchema,
+  }),
+  updateUserAvatar,
+);
 
 export default router;

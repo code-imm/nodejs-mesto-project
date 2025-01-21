@@ -1,6 +1,4 @@
-import {
-  celebrate, Joi, Segments,
-} from 'celebrate';
+import { celebrate, Joi, Segments } from 'celebrate';
 import { Router } from 'express';
 import { createUser, login } from '../controllers/auth';
 
@@ -22,11 +20,19 @@ const signinSchema: Joi.Schema = Joi.object({
   ...userSchema,
 });
 
-router.post('/signup', celebrate({
-  [Segments.BODY]: signupSchema,
-}), createUser);
-router.post('/signin', celebrate({
-  [Segments.BODY]: signinSchema,
-}), login);
+router.post(
+  '/signup',
+  celebrate({
+    [Segments.BODY]: signupSchema,
+  }),
+  createUser,
+);
+router.post(
+  '/signin',
+  celebrate({
+    [Segments.BODY]: signinSchema,
+  }),
+  login,
+);
 
 export default router;

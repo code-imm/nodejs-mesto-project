@@ -20,17 +20,33 @@ const cardParamsSchema: Joi.Schema = Joi.object({
 });
 
 router.get('/', getCards);
-router.post('/', celebrate({
-  [Segments.BODY]: cardBodySchema,
-}), createCard);
-router.delete('/:id', celebrate({
-  [Segments.PARAMS]: cardParamsSchema,
-}), deleteCardById);
-router.put('/:id/likes', celebrate({
-  [Segments.PARAMS]: cardParamsSchema,
-}), likeCard);
-router.delete('/:id/likes', celebrate({
-  [Segments.PARAMS]: cardParamsSchema,
-}), dislikeCard);
+router.post(
+  '/',
+  celebrate({
+    [Segments.BODY]: cardBodySchema,
+  }),
+  createCard,
+);
+router.delete(
+  '/:id',
+  celebrate({
+    [Segments.PARAMS]: cardParamsSchema,
+  }),
+  deleteCardById,
+);
+router.put(
+  '/:id/likes',
+  celebrate({
+    [Segments.PARAMS]: cardParamsSchema,
+  }),
+  likeCard,
+);
+router.delete(
+  '/:id/likes',
+  celebrate({
+    [Segments.PARAMS]: cardParamsSchema,
+  }),
+  dislikeCard,
+);
 
 export default router;
