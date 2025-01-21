@@ -44,6 +44,32 @@ export const getUserById = (
     });
 };
 
+export const getUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  User.findById({ _id: req.user?._id })
+    .then((user) => {
+      if (!user) {
+        res
+          .status(HttpStatusCodes.NOT_FOUND)
+          .send({ message: errorMessages.notFoundUser });
+      } else {
+        res.send(user);
+      }
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.CastError) {
+        res
+          .status(HttpStatusCodes.BAD_REQUEST)
+          .send({ message: errorMessages.invalidUserIdError });
+      } else {
+        next(err);
+      }
+    });
+};
+
 export const updateUserProfile = (
   req: Request,
   res: Response,
