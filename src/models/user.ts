@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import mongoose, { Document, Model, Schema } from 'mongoose';
 import validator from 'validator';
+import UnauthorizedError from '../shared/errors/UnauthorizedError';
 import validateURL from '../shared/utils/validateURL';
 
 export interface IUser {
@@ -61,20 +62,22 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
   },
 });
 
+const errorMessages = {
+  unauthorizedError: 'Неправильные почта или пароль',
+};
+
 userSchema.static(
   'findUserByCredentials',
   async function findUserByCredentials(email: string, password: string) {
     const user = await this.findOne({ email }).select('+password');
     if (!user) {
-      throw new Error('Неправильные почта или пароль');
+      throw new UnauthorizedError(errorMessages.unauthorizedError);
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      throw new Error('Неправильные почта или пароль');
+      throw new UnauthorizedError(errorMessages.unauthorizedError);
     }
-
-    return user;
   },
 );
 
