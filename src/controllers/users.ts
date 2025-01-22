@@ -43,13 +43,7 @@ export const getUserById = (
 
 export const getUser = (req: Request, res: Response, next: NextFunction) => {
   User.findById({ _id: req.user?._id })
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError(errorMessages.notFoundUser));
-      } else {
-        res.send(user);
-      }
-    })
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError(errorMessages.invalidUserIdError));
