@@ -78,6 +78,8 @@ userSchema.static(
     if (!isMatch) {
       throw new UnauthorizedError(errorMessages.unauthorizedError);
     }
+
+    return user;
   },
 );
 

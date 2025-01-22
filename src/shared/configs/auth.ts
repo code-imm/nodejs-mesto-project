@@ -1,3 +1,3 @@
-const SECRET_KEY = 'secret-key';
+const JWT_SECRET_KEY = 'secret-key';
 
-export default SECRET_KEY;
+export default JWT_SECRET_KEY;

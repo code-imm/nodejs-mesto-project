@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import SECRET_KEY from '../shared/configs/auth';
+import JWT_SECRET_KEY from '../shared/configs/auth';
 import UnauthorizedError from '../shared/errors/UnauthorizedError';
 
 interface JwtPayloadWithId extends jwt.JwtPayload {
@@ -23,7 +23,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, SECRET_KEY) as JwtPayloadWithId;
+    payload = jwt.verify(token, JWT_SECRET_KEY) as JwtPayloadWithId;
   } catch {
     next(new UnauthorizedError(errorMessages.authorizationRequired));
     return;

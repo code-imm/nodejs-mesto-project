@@ -6,7 +6,7 @@ import User from '../models/user';
 import BadRequestError from '../shared/errors/BadRequestError';
 import ConflictError from '../shared/errors/ConflictError';
 import UnauthorizedError from '../shared/errors/UnauthorizedError';
-import SECRET_KEY from '../shared/configs/auth';
+import JWT_SECRET_KEY from '../shared/configs/auth';
 
 const errorMessages = {
   createUser: 'Переданы некорректные данные при создании пользователя.',
@@ -46,7 +46,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
 
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET_KEY, {
         expiresIn: '7d',
       });
 
