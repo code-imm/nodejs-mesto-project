@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import SECRET_KEY from '../shared/configs/auth';
+import UnauthorizedError from '../shared/errors/UnauthorizedError';
 
 interface JwtPayloadWithId extends jwt.JwtPayload {
   _id: string;
@@ -14,7 +15,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    res.status(401).send({ message: errorMessages.authorizationRequired });
+    next(new UnauthorizedError(errorMessages.authorizationRequired));
     return;
   }
 
@@ -24,7 +25,7 @@ export default (req: Request, res: Response, next: NextFunction) => {
   try {
     payload = jwt.verify(token, SECRET_KEY) as JwtPayloadWithId;
   } catch {
-    res.status(401).send({ message: errorMessages.authorizationRequired });
+    next(new UnauthorizedError(errorMessages.authorizationRequired));
     return;
   }
 
