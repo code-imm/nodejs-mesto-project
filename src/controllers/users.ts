@@ -71,13 +71,7 @@ export const updateUserProfile = (
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError(errorMessages.notFoundUser));
-      } else {
-        res.send(user);
-      }
-    })
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(errorMessages.updateUserProfile));
@@ -99,13 +93,7 @@ export const updateUserAvatar = (
     { avatar },
     { new: true, runValidators: true },
   )
-    .then((user) => {
-      if (!user) {
-        next(new NotFoundError(errorMessages.notFoundUser));
-      } else {
-        res.send(user);
-      }
-    })
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(errorMessages.updateUserAvatar));
