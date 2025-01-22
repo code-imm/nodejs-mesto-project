@@ -1,12 +1,13 @@
+import { CelebrateError } from 'celebrate';
 import type { NextFunction, Request, Response } from 'express';
 import express from 'express';
 import mongoose from 'mongoose';
-import { CelebrateError } from 'celebrate';
 import auth from './middlewares/auth';
 import { errorLogger, requestLogger } from './middlewares/logger';
 import authRoutes from './routes/auth';
 import cardRoutes from './routes/cards';
 import userRoutes from './routes/users';
+import NotFoundError from './shared/errors/NotFoundError';
 import HttpStatusCodes from './shared/types/HttpStatusCodes';
 
 const errorMessages = {
@@ -52,10 +53,8 @@ app.use(auth);
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
-app.use((req, res) => {
-  res
-    .status(HttpStatusCodes.NOT_FOUND)
-    .send({ message: errorMessages.notFoundError });
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(new NotFoundError(errorMessages.notFoundError));
 });
 
 app.use(errorLogger);
